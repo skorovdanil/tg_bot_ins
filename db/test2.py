@@ -2,20 +2,14 @@ from aiogram import types, F, Router
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
-from aiogram.utils.deep_linking import create_start_link, decode_payload
-
 
 from dotenv import load_dotenv
 load_dotenv()
-import os
 import re
 
 from states import Gen
 
-
-import markups as nav
-
+from markups import worker_markups as nav
 
 from db import worker_db
 
@@ -88,19 +82,19 @@ async def registr_region(callback: types.CallbackQuery, state: FSMContext):
 # @router.callback_query(Gen.worker_action)
 # async def worker_action(callback: types.CallbackQuery, state: FSMContext):
 #
-#     if callback.data == "add_schedule":
+#     if callback.data == "worker_add_schedules":
 #         data = await state.get_data()
 #         await callback.message.delete()
 #         await callback.message.answer(f"Выберите день",reply_markup=nav.WorkerSchedulesDaysMenu)
 #         await state.set_state(Gen.worker_add_schedules)
 #
-#     if callback.data == "update_schedule":
+#     if callback.data == "worker_update_schedules":
 #         data = await state.get_data()
 #         await callback.message.delete()
 #         await callback.message.answer(f"Выберите день",reply_markup=nav.WorkerSchedulesDaysMenu)
 #         await state.set_state(Gen.worker_update_schedules)
 #
-#     if callback.data == "update_region":
+#     if callback.data == "worker_update_region":
 #         await callback.message.delete()
 #         regions = await nav.db_region()
 #         await callback.message.answer_photo(
@@ -111,25 +105,25 @@ async def registr_region(callback: types.CallbackQuery, state: FSMContext):
 
 
 #ВОЗВРАТ В ОСНОВНОЕ МЕНЮ РАБОЧЕГО
-@router.callback_query(F.data == "main_worker_menu")
-async def main_worker_menu(callback: types.CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "worker_main_menu")
+async def worker_main_menu(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"Выберите, что вам нужно", reply_markup=nav.WorkerMainMenu)
     await state.set_state(Gen.worker_action)
 
 # ВОЗВРАТ В ОСНОВНОЕ МЕНЮ РАБОЧЕГО ИЗ МЕНЮ С ФОТО
-@router.callback_query(F.data == "worker_menu_out_photo")
-async def shulder_worker_menu(callback: types.CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "worker_region_main_menu")
+async def worker_schedules_day_menu(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.delete()
     await callback.message.answer(f"Выберите, что вам нужно", reply_markup=nav.WorkerMainMenu)
     await state.set_state(Gen.worker_action)
 #ВОЗВРАТ В МЕНЮ ВЫБОРА ДЛЯ НЕДЕЛИ
-@router.callback_query(F.data == "shulder_worker_menu")
-async def shulder_worker_menu(callback: types.CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "worker_schedules_day_menu")
+async def worker_schedules_day_menu(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"Выберите день", reply_markup=nav.WorkerSchedulesDaysMenu)
     await state.set_state(Gen.worker_add_schedules)
 
-@router.callback_query(F.data == "update_shulder_worker_menu")
-async def shulder_worker_menu(callback: types.CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "worker_update_schedules_day_menu")
+async def worker_schedules_day_menu(callback: types.CallbackQuery, state: FSMContext):
     telegram_id = callback.from_user.id
     nav_days = await nav.db_update_schedules_day(telegram_id)
     await callback.message.edit_text(f"Выберите день", reply_markup=nav_days)
@@ -144,8 +138,8 @@ async def shulder_worker_menu(callback: types.CallbackQuery, state: FSMContext):
 
 
 #ОБРАБОТЧИК ВЫБОРА ДНЯ НЕДЕЛИ ПРИ СОЗДАНИЕ РАСПИСАНИЕ
-@router.callback_query(F.data == "add_schedule")
-async def add_schedule(callback: types.CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "worker_add_schedules")
+async def worker_add_schedules(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"Выберите день",reply_markup=nav.WorkerSchedulesDaysMenu)
     await state.set_state(Gen.worker_add_schedules)
 
@@ -175,8 +169,8 @@ async def worker_add_time_schedules(callback: types.CallbackQuery, state: FSMCon
 
 
 #ОБРАБОТЧИК ВЫБОРА ДНЯ НЕДЕЛИ ПРИ ИЗМЕНЕНИЕ РАСПИСАНИЕ
-@router.callback_query(F.data == "update_schedule")
-async def update_schedule(callback: types.CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "worker_update_schedules")
+async def worker_update_schedules(callback: types.CallbackQuery, state: FSMContext):
     telegram_id = callback.from_user.id
     nav_days = await nav.db_update_schedules_day(telegram_id)
     await callback.message.edit_text(f"Выберите день", reply_markup=nav_days)
@@ -221,8 +215,8 @@ async def worker_update_time_schedules(callback: types.CallbackQuery, state: FSM
 
 
 #ОБРАБОТЧИК ВЫБОРА РЕГИОНА ДЛЯ ОБНОВЛЕНИЕ
-@router.callback_query(F.data == "update_region")
-async def update_region(callback: types.CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "worker_update_region")
+async def worker_update_region(callback: types.CallbackQuery, state: FSMContext):
     regions = await nav.db_region()
     await callback.message.delete()
     await callback.message.answer_photo(
@@ -235,7 +229,7 @@ async def update_region(callback: types.CallbackQuery, state: FSMContext):
 async def worker_update_region(callback: types.CallbackQuery, state: FSMContext):
     region = callback.data
     telegram_id = callback.from_user.id
-    await worker_db.update_region(region,telegram_id)
+    await worker_db.worker_update_region(region,telegram_id)
     await callback.message.delete()
     await callback.message.answer(f"Выберите, что вам нужно",reply_markup=nav.WorkerMainMenu)
     await state.set_state(Gen.worker_action)

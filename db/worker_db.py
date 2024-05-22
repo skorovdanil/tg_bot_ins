@@ -22,7 +22,7 @@ async def add_worker(name,number,region,telegram_id):
     conn.close()
     return
 
-async def update_region(region, telegram_id):
+async def worker_update_region(region, telegram_id):
     conn = sqlite3.connect('db/installation.db')
     cursor = conn.cursor()
     cursor.execute('UPDATE worker SET region = ? WHERE telegram_id = ?', (region, telegram_id))
@@ -47,7 +47,7 @@ async def add_schedules(telegram_id,time,day):
         return True
 
 
-async def get_all_schedules_for_worker(telegram_id):
+async def worker_all_schedules(telegram_id):
     conn = sqlite3.connect('db/installation.db')
     cursor = conn.cursor()
     cursor.execute('SELECT day,time FROM schedules WHERE worker_id = ?', (telegram_id,))
