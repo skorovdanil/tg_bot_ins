@@ -1,9 +1,7 @@
 import asyncio
 import sys
 
-import json
 import logging
-import requests
 
 from dotenv import load_dotenv
 import os
@@ -13,7 +11,8 @@ from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 
-from handlers.main_hand import router as router6
+from handlers.main_hand import router as router1
+from handlers.admin_hand import router as router2
 
 load_dotenv()
 
@@ -22,7 +21,7 @@ load_dotenv()
 async def main():
     bot = Bot(token=os.getenv("BOT_TOKEN"), parse_mode=ParseMode.HTML)
     dp = Dispatcher(storage=MemoryStorage())
-    dp.include_routers(router6)
+    dp.include_routers(router2,router1)
     await bot.delete_webhook(drop_pending_updates=True)
     await asyncio.gather(
         dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
