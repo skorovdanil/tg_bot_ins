@@ -169,6 +169,7 @@ async def worker_add_time_schedules(callback: types.CallbackQuery, state: FSMCon
         if time in nav.Times_schedules:
             await worker_db.add_schedules(user_id,time,day)
             await state.set_state(Gen.worker_add_time_schedules)
+            await callback.answer(text="Успешно добавлено", show_alert=True)
 
 
 
@@ -191,7 +192,7 @@ async def worker_update_schedules(callback: types.CallbackQuery, state: FSMConte
     if day in await worker_db.get_schedules_day(callback.from_user.id):
         nav_times = await nav.db_update_schedules_time_of_day(telegram_id,day)
         await state.update_data(day=callback.data)
-        await callback.message.edit_text(f"Выберите время, в которое вы свободны",reply_markup=nav_times)
+        await callback.message.edit_text(f"Выберите время, которые хотите удалить",reply_markup=nav_times)
         await state.set_state(Gen.worker_update_time_schedules)
 
 
@@ -204,20 +205,38 @@ async def worker_update_time_schedules(callback: types.CallbackQuery, state: FSM
     user_id = callback.from_user.id
     if day in await worker_db.get_schedules_day(callback.from_user.id):
         if time in await worker_db.get_schedules_time_of_day(callback.from_user.id, day):
-            print(1)
-            # await worker_db.add_schedules(user_id,time,day)
-            # await state.set_state(Gen.worker_add_time_schedules)
+            await worker_db.delete_schedules_time(user_id,time,day)
+            nav_times = await nav.db_update_schedules_time_of_day(user_id, day)
+            await callback.message.edit_text(f"Выберите время, которые хотите удалить", reply_markup=nav_times)
+            await state.set_state(Gen.worker_update_time_schedules)
+            await callback.answer(text="Удалено", show_alert=True)
 
 
 
 
 
+#ОБРАБОТЧИК ВЫВОДА ПОЛНОГО РАСПИСАНИЯ У СОТРУДНИКА
+@router.callback_query(F.data == "get_all_schedules_for_worker")
+async def add_schedule(callback: types.CallbackQuery, state: FSMContext):
+    data = await worker_db.get_all_schedules_for_worker(callback.from_user.id)
+    if data != False:
+        lines = []
+        for days in data:
 
+            day = days[0]  # Первый элемент - день недели
+            lines.append(day)  # Добавляем день недели в список строк
+            for i in range(1, len(days)):  # Проход по временам
+                time = days[i]
+                lines.append(time)  # Добавляем временной интервал в список строк
+            lines.append('')  # Добавляем пустую строку для разделения дней
 
+        # Объединение всех строк в один текст, удаляя последнюю пустую строку
 
+        final_text = '\n'.join(lines).strip()
 
-
-
+        await callback.message.edit_text(text=final_text, reply_markup=nav.BackMainMenu)
+    else:
+        await callback.message.edit_text(text="У вас еще нет расписания", reply_markup=nav.BackMainMenu)
 
 
 #ОБРАБОТЧИК ВЫБОРА РЕГИОНА ДЛЯ ОБНОВЛЕНИЕ

@@ -47,6 +47,58 @@ async def add_schedules(telegram_id,time,day):
         return True
 
 
+async def get_all_schedules_for_worker(telegram_id):
+    conn = sqlite3.connect('db/installation.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT day,time FROM schedules WHERE worker_id = ?', (telegram_id,))
+    result = cursor.fetchall()
+    conn.close()
+    if result:
+        day_order = {
+            'Понедельник': 1,
+            'Вторник': 2,
+            'Среда': 3,
+            'Четверг': 4,
+            'Пятница': 5,
+            'Суббота': 6,
+            'Воскресенье': 7
+        }
+
+        # Функция, чтобы извлечь начало временного диапазона в часах и минутах
+
+        def get_time_key(time_range):
+
+            start_time = time_range.split(' - ')[0]
+
+            return tuple(map(int, start_time.split(':')))
+
+        # Сортировка списка по дням недели и времени
+
+        sorted_schedule = sorted(
+
+            result,
+
+            key=lambda entry: (day_order[entry[0]], get_time_key(entry[1]))
+
+        )
+
+        # Создание словаря для группировки по дням недели
+
+        grouped_schedule = {}
+
+        for day, time in sorted_schedule:
+
+            if day not in grouped_schedule:
+                grouped_schedule[day] = []
+
+            grouped_schedule[day].append(time)
+
+        # Преобразование словаря в список списков
+
+        result = [[day] + times for day, times in grouped_schedule.items()]
+        return result
+    else:
+        return False
 
 
 async def get_schedules_day(telegram_id):
@@ -77,3 +129,12 @@ async def get_schedules_time_of_day(telegram_id,day):
     conn.close()
     values = [item[0] for item in result]
     return values
+
+
+async def delete_schedules_time(telegram_id, time, day):
+    conn = sqlite3.connect('db/installation.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM schedules WHERE worker_id = ? AND time = ? AND day = ?', (telegram_id, time, day))
+    conn.commit()
+    conn.close()
+    return True

@@ -43,7 +43,10 @@ async def db_region():
     return EndBuyApartment
 
 
-
+BackMainMenu = [
+[InlineKeyboardButton(text="⬅ Назад", callback_data="main_worker_menu")]
+]
+BackMainMenu = InlineKeyboardMarkup(inline_keyboard=BackMainMenu)
 
 
 #МЕНЮ ОБНОВЛЕНИЯ РАСПИСАНИЯ У СОТРУДНИКА
@@ -89,6 +92,7 @@ async def db_update_schedules_time_of_day(telegram_id,day):
 WorkerMainMenu =[
 [InlineKeyboardButton(text="Составить расписание на неделю (Добавить)", callback_data="add_schedule")],
 [InlineKeyboardButton(text="Изменить расписание на неделю (Удалить)", callback_data="update_schedule")],
+[InlineKeyboardButton(text="Посмотреть моё расписание", callback_data="get_all_schedules_for_worker")],
 [InlineKeyboardButton(text="Сменить район работы", callback_data="update_region")]]
 WorkerMainMenu = InlineKeyboardMarkup(inline_keyboard=WorkerMainMenu)
 
@@ -100,13 +104,13 @@ InlineKeyboardButton(text="Вторник", callback_data="Вторник")],
 InlineKeyboardButton(text="Четверг", callback_data="Четверг")],
 [InlineKeyboardButton(text="Пятница", callback_data="Пятница"),
 InlineKeyboardButton(text="Суббота", callback_data="Суббота")],
-[InlineKeyboardButton(text="Восресенье", callback_data="Восресенье")],
+[InlineKeyboardButton(text="Воскресенье", callback_data="Воскресенье")],
 [InlineKeyboardButton(text="⬅ Назад", callback_data="main_worker_menu")]
 ]
 WorkerSchedulesDaysMenu = InlineKeyboardMarkup(inline_keyboard=WorkerSchedulesDaysMenu)
 
 
-Days_Schedules = ["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Восресенье"]
+Days_Schedules = ["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"]
 
 
 Times_schedules = ["9:00 - 10:00", "13:00 - 14:00", "17:00 - 18:00"]
