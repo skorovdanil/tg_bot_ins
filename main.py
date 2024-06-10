@@ -11,7 +11,7 @@ from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 
-from handlers.main_hand import router as router1
+from handlers.worker_hand import router as router1
 from handlers.admin_hand import router as router2
 
 load_dotenv()

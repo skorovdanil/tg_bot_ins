@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove , WebAppInfo , WebAppData
 from aiogram.utils.keyboard import ReplyKeyboardBuilder,InlineKeyboardBuilder, KeyboardBuilder
 import asyncio
-from db import worker_db
+from db import main_db
 
 #ТАБЛИЦА РЕГИОНОВ
 async def db_region():
@@ -32,7 +32,7 @@ BackMainMenu = InlineKeyboardMarkup(inline_keyboard=BackMainMenu)
 ########################################
 #ВЫБОР ДНЯ НЕДЕЛИ
 async def db_update_schedules_day(telegram_id):
-    days = await worker_db.get_schedules_day(telegram_id)
+    days = await main_db.get_schedules_day(telegram_id)
     DaysUpdateSchedules = []
     MenuDays = []
     for day in days:
@@ -50,7 +50,7 @@ async def db_update_schedules_day(telegram_id):
 
 #ВЫБОР ВРЕМЕНИ
 async def db_update_schedules_time_of_day(telegram_id,day):
-    times = await worker_db.get_schedules_time_of_day(telegram_id,day)
+    times = await main_db.get_schedules_time_of_day(telegram_id,day)
 
     TimesUpdateSchedules = []
 
@@ -62,6 +62,15 @@ async def db_update_schedules_time_of_day(telegram_id,day):
     TimesUpdateSchedules.append([InlineKeyboardButton(text="⬅ Назад", callback_data="worker_update_schedules_day_menu")])
     TimesUpdateSchedules = InlineKeyboardMarkup(inline_keyboard=TimesUpdateSchedules)
     return TimesUpdateSchedules
+
+
+
+async def confrim_menu():
+    ConfrimMenu = []
+    ConfrimMenu.append([InlineKeyboardButton(text="Да", callback_data="confirm_yes")])
+    ConfrimMenu.append([InlineKeyboardButton(text="Отменить", callback_data="confirm_no")])
+    ConfrimMenu = InlineKeyboardMarkup(inline_keyboard=ConfrimMenu)
+    return ConfrimMenu
 ################################
 ################################
 ################################
@@ -103,6 +112,7 @@ for time in Times_schedules:
     times.append(InlineKeyboardButton(text=f"{time}", callback_data=f"{time}"))
     AddTimeSchedules.append(times)
     builder = []
+AddTimeSchedules.append([InlineKeyboardButton(text="Весь день", callback_data="all_day")])
 AddTimeSchedules.append([InlineKeyboardButton(text="⬅ Назад", callback_data="worker_schedules_day_menu")])
 AddTimeSchedules = InlineKeyboardMarkup(inline_keyboard=AddTimeSchedules)
 

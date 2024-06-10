@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 async def find_worker(telegram_id):
     conn = sqlite3.connect('db/installation.db')
@@ -50,7 +51,7 @@ async def add_schedules(telegram_id,time,day):
 async def worker_all_schedules(telegram_id):
     conn = sqlite3.connect('db/installation.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT day,time FROM schedules WHERE worker_id = ?', (telegram_id,))
+    cursor.execute('SELECT day, time, installation FROM schedules WHERE worker_id = ?', (telegram_id,))
     result = cursor.fetchall()
     conn.close()
     if result:
@@ -65,37 +66,23 @@ async def worker_all_schedules(telegram_id):
         }
 
         # Функция, чтобы извлечь начало временного диапазона в часах и минутах
-
         def get_time_key(time_range):
-
             start_time = time_range.split(' - ')[0]
-
             return tuple(map(int, start_time.split(':')))
 
         # Сортировка списка по дням недели и времени
-
-        sorted_schedule = sorted(
-
-            result,
-
-            key=lambda entry: (day_order[entry[0]], get_time_key(entry[1]))
-
-        )
+        sorted_schedule = sorted(result, key=lambda entry: (day_order[entry[0]], get_time_key(entry[1])))
 
         # Создание словаря для группировки по дням недели
-
         grouped_schedule = {}
-
-        for day, time in sorted_schedule:
-
+        for day, time, installation in sorted_schedule:
             if day not in grouped_schedule:
                 grouped_schedule[day] = []
-
-            grouped_schedule[day].append(time)
+            grouped_schedule[day].append((time, installation))
 
         # Преобразование словаря в список списков
-
         result = [[day] + times for day, times in grouped_schedule.items()]
+
         return result
     else:
         return False
@@ -104,7 +91,7 @@ async def worker_all_schedules(telegram_id):
 async def get_schedules_day(telegram_id):
     conn = sqlite3.connect('db/installation.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT day FROM schedules WHERE worker_id = ?', (telegram_id,))
+    cursor.execute('SELECT day FROM schedules WHERE worker_id = ? AND installation = 0', (telegram_id,))
     result = cursor.fetchall()
     conn.close()
     values = [item[0] for item in result]
@@ -124,11 +111,12 @@ async def get_schedules_day(telegram_id):
 async def get_schedules_time_of_day(telegram_id,day):
     conn = sqlite3.connect('db/installation.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT time FROM schedules WHERE worker_id = ? AND day = ?', (telegram_id, day))
+    cursor.execute('SELECT time FROM schedules WHERE worker_id = ? AND day = ? AND installation = 0', (telegram_id, day))
     result = cursor.fetchall()
     conn.close()
     values = [item[0] for item in result]
-    return values
+    times_data = sorted(values, key=lambda x: datetime.strptime(x.split(' - ')[0], "%H:%M"))
+    return times_data
 
 
 async def delete_schedules_time(telegram_id, time, day):

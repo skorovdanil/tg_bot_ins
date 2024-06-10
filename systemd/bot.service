@@ -1,0 +1,16 @@
+[Unit]
+Description=installation_bot
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/bots/inst_bot
+ExecStart=/bots/bot/venv/bin/python3 /bots/bot/main.py
+RestartSec=10
+Restart=Always
+
+
+[Install]
+WantedBy=multi-user.target
