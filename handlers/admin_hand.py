@@ -164,10 +164,13 @@ async def worker_add_schedules(callback: types.CallbackQuery, state: FSMContext)
     data = await state.get_data()
     day = data.get("day")
     schedule_id = data.get("schedule_id")
+    for_tgid = await admin_db.search_schedule_by_id(schedule_id)
+    worker_telegram_id = for_tgid[0][1]
     if callback.data == "confirm_yes":
         if await admin_db.search_schedule_by_id(schedule_id):
             await admin_db.reservation_schedule_installation(schedule_id)
             await callback.answer(text="Успешно забронированно", show_alert=True)
+            await callback.message.bot.send_message(text=f"🕑Новая заявка {for_tgid[0][3]} {for_tgid[0][2]}", chat_id=worker_telegram_id)
             work_mark_times = await adm_mark.db_get_schedules(day)
             schedules_info = work_mark_times[1][1]
             grouped = defaultdict(lambda: defaultdict(list))

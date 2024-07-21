@@ -66,7 +66,7 @@ async def registr_name(message: Message, state: FSMContext):
     if len(reg_name) > 2:
         await state.set_state(Worker.registr_region)
         await state.update_data(name=message.text)
-        regions = await work_mark.db_region()
+        regions = await work_mark.db_region(True)
         await message.answer_photo(photo="https://sun9-14.userapi.com/impg/IssyepRA_sRxWEgxWWqCgKjie5r9s_f-hOlbcw/G4TSsYRhlcs.jpg?size=1280x1152&quality=95&sign=f4ef9b29c9c850528f0fafb17b790c58&type=album",
                                    caption="Выберите район работы", reply_markup=regions)
     else:
@@ -318,7 +318,7 @@ async def worker_all_schedules(callback: types.CallbackQuery, state: FSMContext)
 #ОБРАБОТЧИК ВЫБОРА РЕГИОНА ДЛЯ ОБНОВЛЕНИЕ
 @router.callback_query(F.data == "worker_update_region")
 async def worker_update_region(callback: types.CallbackQuery, state: FSMContext):
-    regions = await work_mark.db_region()
+    regions = await work_mark.db_region(False)
     telegram_id = callback.from_user.id
     if await main_db.find_worker(telegram_id) == True:
         await callback.message.delete()

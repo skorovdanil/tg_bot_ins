@@ -4,7 +4,7 @@ import asyncio
 from db import main_db
 
 #ТАБЛИЦА РЕГИОНОВ
-async def db_region():
+async def db_region(registration):
     EndBuyApartment = []
     builder = []
     for i in range(1,17):
@@ -16,11 +16,13 @@ async def db_region():
 
     if builder:
         EndBuyApartment.append(builder)
-    EndBuyApartment.append([InlineKeyboardButton(text="⬅ Назад", callback_data="worker_region_main_menu")])
+    if not registration:
+        EndBuyApartment.append([InlineKeyboardButton(text="⬅ Назад", callback_data="worker_region_main_menu")])
     EndBuyApartment = InlineKeyboardMarkup(inline_keyboard=EndBuyApartment)
     return EndBuyApartment
 
 #КНОПКА ВОЗРВАТА В ГЛАВНОЕ МЕНЮ
+
 BackMainMenu = [
 [InlineKeyboardButton(text="⬅ Назад", callback_data="worker_main_menu")]
 ]

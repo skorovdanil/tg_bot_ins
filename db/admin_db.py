@@ -66,9 +66,10 @@ async def reservation_schedule_installation(schedule_id):
 async def search_schedule_by_id(schedule_id):
     conn = sqlite3.connect('db/installation.db')
     cursor = conn.cursor()
-    data = cursor.execute('SELECT * FROM schedules WHERE id = ? AND installation = False', (schedule_id,))
+    cursor.execute('SELECT * FROM schedules WHERE id = ? AND installation = False', (schedule_id,))
+    result = cursor.fetchall()
     conn.close()
-    return data
+    return result
 
 
 
