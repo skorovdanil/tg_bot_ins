@@ -12,6 +12,7 @@ class Worker(StatesGroup):
     worker_add_schedules = State()
     worker_add_time_schedules = State()
 
+
     worker_update_schedules = State()
     worker_update_time_schedules = State()
     worker_update_time_schedules_confrim = State()
@@ -22,8 +23,12 @@ class Worker(StatesGroup):
 class Admin(StatesGroup):
 
     admin_action = State()
+
+    admin_download_pdf = State()
+
     admin_schedules_menu = State()
     admin_schedules_action = State()
+
 
     admin_schedules_action_confrim = State()
     admin_schedules_delete_confrim = State()

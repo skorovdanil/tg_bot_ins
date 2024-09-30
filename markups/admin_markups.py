@@ -54,6 +54,7 @@ async def confrim_menu():
 AdminMainMenu =[
 [InlineKeyboardButton(text="Список монтажников", callback_data="admin_list_workers_menu")],
 [InlineKeyboardButton(text="Расписание монтажников", callback_data="admin_schedules_menu")],
+[InlineKeyboardButton(text="Загрузить прайс-лист", callback_data="admin_download_pdf")],
 [InlineKeyboardButton(text="Отчистка расписания у всех монтажников (делать раз в неделю)", callback_data="admin_clear_schedules")]]
 AdminMainMenu = InlineKeyboardMarkup(inline_keyboard=AdminMainMenu)
 

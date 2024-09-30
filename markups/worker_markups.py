@@ -83,6 +83,7 @@ WorkerMainMenu =[
 [InlineKeyboardButton(text="Составить расписание на неделю (Добавить)", callback_data="worker_add_schedules")],
 [InlineKeyboardButton(text="Изменить расписание на неделю (Удалить)", callback_data="worker_update_schedules")],
 [InlineKeyboardButton(text="Посмотреть моё расписание", callback_data="worker_all_schedules")],
+[InlineKeyboardButton(text="Прайс-лист", callback_data="worker_get_pdf")],
 [InlineKeyboardButton(text="Сменить район работы", callback_data="worker_update_region")]]
 WorkerMainMenu = InlineKeyboardMarkup(inline_keyboard=WorkerMainMenu)
 
@@ -100,8 +101,10 @@ InlineKeyboardButton(text="Суббота", callback_data="Суббота")],
 ]
 WorkerSchedulesDaysMenu = InlineKeyboardMarkup(inline_keyboard=WorkerSchedulesDaysMenu)
 
+
 #СПИОСОК ДНЕЙ НЕДЕЛИ
 Days_Schedules = ["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"]
+
 
 #СПИСОК ДОСТУПНЫХ ВРЕМЕННЫХ ДИАПАЗОНОВ
 Times_schedules = ["9:00 - 10:00", "13:00 - 14:00", "17:00 - 18:00"]

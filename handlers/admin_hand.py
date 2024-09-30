@@ -3,8 +3,10 @@ from collections import defaultdict
 
 from aiogram import types, F, Router
 from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, Document
 from aiogram.fsm.context import FSMContext
+from aiogram.types.input_file import FSInputFile
+import aiogram.types
 
 
 from db import admin_db
@@ -68,6 +70,33 @@ async def worker_add_schedules(callback: types.CallbackQuery, state: FSMContext)
     else:
         await state.set_state(Admin.admin_action)
         await callback.message.edit_text(f"Выберите, что вам нужно", reply_markup=adm_mark.AdminMainMenu)
+
+
+
+
+
+#########Меню загрузки прайс-листа
+
+@router.callback_query(F.data == "admin_download_pdf")
+async def admin_download_pdf(callback: types.CallbackQuery, state: FSMContext):
+    await state.set_state(Admin.admin_schedules_delete_confrim)
+    confrim_menu = await adm_mark.confrim_menu()
+    await callback.message.edit_text(f"Скиньте файл, который хотите загрузить", reply_markup=confrim_menu)
+    await state.set_state(Admin.admin_download_pdf)
+
+@router.message(F.content_type.in_({'document'}), Admin.admin_download_pdf)
+async def handle_file(message: types.Message, state: FSMContext):
+    document = message.document
+
+    if document:
+        file_id = document.file_id
+        file_info = await message.bot.get_file(file_id)
+        file_path = file_info.file_path
+
+        print(1)
+
+
+
 
 
 
